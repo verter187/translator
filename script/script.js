@@ -3,8 +3,10 @@
 const formAddCard = document.querySelector('#form_addcard'),
     searchTextElem = document.querySelector('#search_text');
 
-let words = [],
-    foundWords = [];
+let words = JSON.parse(localStorage.getItem("words") || '[]');
+rerender(words);
+
+let foundWords = [];
 
 formAddCard.addEventListener('submit', addWordCard);
 searchTextElem.addEventListener('input', searchWordCards);
@@ -38,13 +40,18 @@ function addWordCard(event) {
     const fields = ['original', 'translate', 'color'],
         word = {};
 
-    fields.forEach(field => word[field] = event.target[field].value);
+    fields.forEach(field => {
+        word[field] = event.target[field].value;
+        event.target[field].value = '';
+    });
+
     word.id = 'card' + randomID();
     word.upside = false;
 
     words.push(word);
 
     rerender(words);
+
 }
 
 function removeWordCard(card) {
@@ -57,10 +64,9 @@ function rerender(words) {
     const cards = document.querySelector('.cards');
     cards.innerText = '';
 
+    localStorage.setItem("words", JSON.stringify(words));
 
     for (let i = 0; i < words.length; i++) {
-
-
 
         const word = words[i],
             {
